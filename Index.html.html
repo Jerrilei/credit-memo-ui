@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)file:///C:/Users/18555/Documents/8.7.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credit Memorandum — Final Editor v8.9</title>
+<link href="./Credit Memorandum — Final Editor v8.6_files/css2" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#fff;
+  --muted:#6b7280;
+  --accent:#0b66c3;
+  --danger:#ef4444;
+  --missing-ring:#facc15;
+}
+
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  margin:0;color:#0f172a;
+}
+
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px 24px 40px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:18px 20px;
+  margin-bottom:20px;
+  box-shadow:0 4px 18px rgba(15,23,42,0.08);
+  border:1px solid rgba(15,23,42,0.03);
+}
+
+.section-title{
+  font-size:18px;font-weight:700;margin:4px 0 12px;
+}
+
+label{
+  font-size:13px;color:var(--muted);
+}
+
+input,textarea,select{
+  width:100%;padding:8px 10px;margin-top:4px;
+  border-radius:8px;border:1px solid #d1d5db;
+  font-size:14px;background:#fff;box-sizing:border-box;
+}
+
+textarea{ min-height:80px; resize:vertical; }
+
+.table{
+  width:100%;border-collapse:collapse;margin-top:8px;font-size:14px;
+}
+.table th,.table td{
+  padding:8px;border-bottom:1px solid #e5e7eb;vertical-align:top;
+}
+
+.table th{
+  font-weight:600;
+  text-align:left;
+  background:#f9fafb;
+}
+
+/* ===== Numeric columns right-aligned: summary + full tables ===== */
+#summaryTopTbl th:nth-child(n+2),
+#summaryTopTbl td:nth-child(n+2),
+#summaryBottomTbl th:nth-child(n+2),
+#summaryBottomTbl td:nth-child(n+2),
+#finTableFull th:nth-child(n+2),
+#finTableFull td:nth-child(n+2){
+  text-align:right;
+}
+
+.btn{
+  background:var(--accent);
+  color:#fff;padding:8px 18px;
+  border-radius:8px;border:0;cursor:pointer;
+  font-size:14px;font-weight:600;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn-outline{
+  background:transparent;border:2px solid var(--accent);color:var(--accent);
+  padding:7px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;
+}
+.btn:disabled, .btn-outline:disabled{
+  opacity:.5;cursor:not-allowed;
+}
+
+.header-row{
+  display:flex;flex-direction:column;
+  align-items:stretch;gap:8px;
+}
+
+/* Buyer info layout B */
+.buyer-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px 24px;
+}
+
+.field-col{ display:flex;flex-direction:column;gap:10px; }
+.field{ display:flex;flex-direction:column; }
+.note{ font-size:12px;color:var(--muted); }
+.small{ font-size:12px; }
+
+/* Obligor Ratings 3-column grid */
+.obligor-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;
+}
+
+/* Parameters 3-column grid */
+.param-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px 24px;
+  margin-top:8px;
+}
+
+/* Floating Chatbot */
+#chatFloatBtn{
+  position:fixed;right:24px;bottom:24px;
+  background:#0b66c3;color:#fff;
+  width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);z-index:999;
+}
+#chatPanel{
+  position:fixed;right:24px;bottom:90px;width:320px;
+  background:#fff;border-radius:12px;
+  box-shadow:0 8px 26px rgba(0,0,0,0.2);
+  padding:12px;display:none;z-index:998;
+}
+#chatPanel textarea{ min-height:70px; }
+
+/* Hide during PDF */
+.pdf-hide{ display:none !important; }
+
+/* fetch spinner */
+.spinner {
+  width: 14px;height:14px;
+  border:2px solid #fff;border-top-color:transparent;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin { 100%{ transform:rotate(360deg); } }
+
+/* ===== Onboarding overlay ===== */
+.tour-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,0.18);
+  z-index:1000;
+  display:none;
+}
+.tour-card{
+  position:fixed;
+  max-width:360px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 18px 45px rgba(15,23,42,0.35);
+  padding:14px 16px;
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.tour-step-label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.tour-title{
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:6px;
+}
+.tour-body{
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:10px;
+}
+.tour-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+.small-btn{
+  font-size:12px;
+  padding:6px 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ========================= -->
+<!-- HEADER BLOCK -->
+<!-- ========================= -->
+
+<div class="card">
+  <div class="header-row">
+
+    <!-- Row 1: Title + Date -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <h1 id="memoTitle" style="margin:0;font-size:22px;cursor:pointer;">CREDIT MEMORANDUM</h1>
+      </div>
+      <div style="text-align:right">
+        <div class="note">Prepared date</div>
+        <div id="prepDate">2025-01-01</div>
+      </div>
+    </div>
+
+    <!-- Row 2: Subtitle + Export -->
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="note">
+        Template aligned to PDF memo. Start with buyer name → Fetch Data, then refine and export.
+      </div>
+
+      <button class="btn-outline" onclick="exportPDF()">Export PDF</button>
+    </div>
+
+  </div> <!-- /header-row -->
+
+  <!-- Buyer lookup row -->
+  <div style="display:flex;gap:12px;margin-top:14px;align-items:flex-end">
+    <div style="flex:1">
+      <label>Buyer name</label>
+      <input id="buyerLookup" placeholder="Type buyer name (e.g. PDD Holdings, Walmart)">
+    </div>
+
+    <button class="btn" id="refreshBuyer">Fetch Data</button>
+  </div>
+
+  <div style="margin-top:16px" class="section-title">Executive Summary</div>
+  <textarea id="execSummary"></textarea>
+
+  <div style="margin-top:12px" class="section-title">Key Highlights</div>
+  <textarea id="highlights"></textarea>
+</div>
+
+<!-- BUYER INFORMATION -->
+<div class="card">
+  <div class="section-title">Buyer Information</div>
+  <div class="buyer-grid">
+    <!-- Column 1: Identity & geography -->
+    <div class="field-col">
+      <div class="field">
+        <label>Borrower / Obligor</label>
+        <input id="companyName">
+      </div>
+      <div class="field">
+        <label>Obligor Legal Name</label>
+        <input id="obligorLegalName">
+      </div>
+      <div class="field">
+        <label>Group / Parent Legal Name</label>
+        <input id="groupParentName">
+      </div>
+      <div class="field">
+        <label>Country</label>
+        <input id="country">
+      </div>
+      <div class="field">
+        <label>Country of Incorporation</label>
+        <input id="countryOfIncorp">
+      </div>
+    </div>
+
+    <!-- Column 2: Business narrative -->
+    <div class="field-col">
+      <div class="field">
+        <label>Business description</label>
+        <textarea id="business"></textarea>
+      </div>
+      <div class="field">
+        <label>Business activities</label>
+        <textarea id="coreBusinessActivities"></textarea>
+      </div>
+      <div class="field">
+        <label>Key Customers / Main markets</label>
+        <textarea id="coreBusinessCustomers"></textarea>
+      </div>
+    </div>
+
+    <!-- Column 3: Market data & ratings -->
+    <div class="field-col">
+      <div class="field">
+        <label>Website</label>
+        <input id="coreBusinessWebsite">
+      </div>
+      <div class="field">
+        <label>Market Cap</label>
+        <input id="marketCap">
+      </div>
+      <div class="field">
+        <label>External credit rating</label>
+        <input id="externalRating">
+      </div>
+      <div class="field">
+        <label>Internal Rating (Current)</label>
+        <input id="internalRatingCurrent">
+      </div>
+      <div class="field">
+        <label>Internal Rating (Proposed)</label>
+        <input id="internalRatingProposed">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY FINANCIALS (上下两块，同一卡片) -->
+<div class="card">
+  <div class="section-title">Financial Highlights (Summary)</div>
+
+  <!-- 上：Turnover / GP% / EBITDA -->
+  <table class="table" id="summaryTopTbl">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>2022</th>
+        <th>2023</th>
+        <th>2024</th>
+        <th>23 vs 22</th>
+        <th>24 vs 23</th>
+      </tr>
+    </thead>
+    <tbody id="summaryTopBody"><tr>
+      <td>Turnover</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>-</td>
+      <td>-</td>
+    </tr><tr>
+      <td>GP%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>-</td>
+      <td>-</td>
+    </tr><tr>
+      <td>EBITDA</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>-</td>
+      <td>-</td>
+    </tr></tbody>
+  </table>
+
+  <!-- 下：Debt / Equity / Free cash flow -->
+  <table class="table" id="summaryBottomTbl" style="margin-top:16px;">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>2022</th>
+        <th>2023</th>
+        <th>2024</th>
+        <th>23 vs 22</th>
+        <th>24 vs 23</th>
+      </tr>
+    </thead>
+    <tbody id="summaryBottomBody"><tr>
+      <td>Debt</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>-</td>
+      <td>-</td>
+    </tr><tr>
+      <td>Equity</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>-</td>
+      <td>-</td>
+    </tr><tr>
+      <td>Free cash flow</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>-</td>
+      <td>-</td>
+    </tr></tbody>
+  </table>
+</div>
+
+<!-- CREDIT LIMITS + PARAMETERS -->
+<div class="card">
+  <div class="section-title">Credit Limits</div>
+  <table class="table" id="creditLimitsTbl">
+    <thead>
+      <tr>
+        <th>(US$m)</th><th>Existing</th><th>Current utilisation</th><th>Proposed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Secured</th>
+        <td><input id="limSecExisting"></td>
+        <td><input id="limSecUtil"></td>
+        <td><input id="limSecProp"></td>
+      </tr>
+      <tr>
+        <th>Residual</th>
+        <td><input id="limResExisting"></td>
+        <td><input id="limResUtil"></td>
+        <td><input id="limResProp"></td>
+      </tr>
+      <tr>
+        <th>Clean</th>
+        <td><input id="limCleanExisting"></td>
+        <td><input id="limCleanUtil"></td>
+        <td><input id="limCleanProp"></td>
+      </tr>
+      <tr>
+        <th>Total</th>
+        <td><input id="limTotExisting"></td>
+        <td><input id="limTotUtil"></td>
+        <td><input id="limTotProp"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:18px;">Parameters</div>
+  <div class="param-grid">
+    <div class="field">
+      <label>Insurer</label>
+      <input id="insurer">
+    </div>
+    <div class="field">
+      <label>Credit Insurance Limit</label>
+      <input id="creditInsLimit">
+    </div>
+    <div class="field">
+      <label>Advance Rate</label>
+      <input id="advanceRate">
+    </div>
+
+    <div class="field">
+      <label>TCS Rate</label>
+      <input id="tcsRate">
+    </div>
+    <div class="field">
+      <label>Past 12 mth GMV</label>
+      <input id="gmvPast12">
+    </div>
+    <div class="field">
+      <label>Forecast 12 mth GMV</label>
+      <input id="gmvForecast12">
+    </div>
+
+    <div class="field">
+      <label>Financing term</label>
+      <input id="financingTerm">
+    </div>
+    <div class="field">
+      <label>Supplier Credit Days</label>
+      <input id="supplierCreditDays">
+    </div>
+    <div class="field">
+      <label>Payment History / Delay Days</label>
+      <input id="paymentHistory">
+    </div>
+
+    <div class="field">
+      <label>Dilution rate</label>
+      <input id="dilutionRate">
+    </div>
+    <div class="field">
+      <label>Peak / Average WC</label>
+      <input id="peakAvgWc">
+    </div>
+    <div class="field">
+      <label>LF Customer Since</label>
+      <input id="customerSince">
+    </div>
+  </div>
+</div>
+
+<!-- FULL FINANCIALS -->
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="section-title">Financial Highlights (Full — Credit Metrics)</div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn" id="refreshAnalysisBtn" onclick="refreshAnalysisFromTables()">Refresh Analysis</button>
+    </div>
+  </div>
+
+  <table class="table" id="finTableFull">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>2022</th>
+        <th>2023</th>
+        <th>2024</th>
+        <th>23 vs 22</th>
+        <th>24 vs 23</th>
+        <th>Latest Quarter</th>
+      </tr>
+    </thead>
+    <tbody id="finBody"><tr>
+      <td>Turnover</td>
+      <td><input data-metric="Turnover" data-year="2022"></td>
+      <td><input data-metric="Turnover" data-year="2023"></td>
+      <td><input data-metric="Turnover" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>GP</td>
+      <td><input data-metric="GP" data-year="2022"></td>
+      <td><input data-metric="GP" data-year="2023"></td>
+      <td><input data-metric="GP" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>GP%</td>
+      <td><input data-metric="GP%" data-year="2022"></td>
+      <td><input data-metric="GP%" data-year="2023"></td>
+      <td><input data-metric="GP%" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>EBITDA</td>
+      <td><input data-metric="EBITDA" data-year="2022"></td>
+      <td><input data-metric="EBITDA" data-year="2023"></td>
+      <td><input data-metric="EBITDA" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>EBITDA margin %</td>
+      <td><input data-metric="EBITDA margin %" data-year="2022"></td>
+      <td><input data-metric="EBITDA margin %" data-year="2023"></td>
+      <td><input data-metric="EBITDA margin %" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Net profit</td>
+      <td><input data-metric="Net profit" data-year="2022"></td>
+      <td><input data-metric="Net profit" data-year="2023"></td>
+      <td><input data-metric="Net profit" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Net Profit %</td>
+      <td><input data-metric="Net Profit %" data-year="2022"></td>
+      <td><input data-metric="Net Profit %" data-year="2023"></td>
+      <td><input data-metric="Net Profit %" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Cash &amp; Bank</td>
+      <td><input data-metric="Cash &amp; Bank" data-year="2022"></td>
+      <td><input data-metric="Cash &amp; Bank" data-year="2023"></td>
+      <td><input data-metric="Cash &amp; Bank" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Inventory</td>
+      <td><input data-metric="Inventory" data-year="2022"></td>
+      <td><input data-metric="Inventory" data-year="2023"></td>
+      <td><input data-metric="Inventory" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Debt - Current</td>
+      <td><input data-metric="Debt - Current" data-year="2022"></td>
+      <td><input data-metric="Debt - Current" data-year="2023"></td>
+      <td><input data-metric="Debt - Current" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Debt - Non-current</td>
+      <td><input data-metric="Debt - Non-current" data-year="2022"></td>
+      <td><input data-metric="Debt - Non-current" data-year="2023"></td>
+      <td><input data-metric="Debt - Non-current" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Equity</td>
+      <td><input data-metric="Equity" data-year="2022"></td>
+      <td><input data-metric="Equity" data-year="2023"></td>
+      <td><input data-metric="Equity" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Free cash flow</td>
+      <td><input data-metric="Free cash flow" data-year="2022"></td>
+      <td><input data-metric="Free cash flow" data-year="2023"></td>
+      <td><input data-metric="Free cash flow" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Cash Conv. Cycle (days)</td>
+      <td><input data-metric="Cash Conv. Cycle (days)" data-year="2022"></td>
+      <td><input data-metric="Cash Conv. Cycle (days)" data-year="2023"></td>
+      <td><input data-metric="Cash Conv. Cycle (days)" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Net debt / EBITDA (x)</td>
+      <td><input data-metric="Net debt / EBITDA (x)" data-year="2022"></td>
+      <td><input data-metric="Net debt / EBITDA (x)" data-year="2023"></td>
+      <td><input data-metric="Net debt / EBITDA (x)" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>EBITDA / Interest (x)</td>
+      <td><input data-metric="EBITDA / Interest (x)" data-year="2022"></td>
+      <td><input data-metric="EBITDA / Interest (x)" data-year="2023"></td>
+      <td><input data-metric="EBITDA / Interest (x)" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr><tr>
+      <td>Current ratio (x)</td>
+      <td><input data-metric="Current ratio (x)" data-year="2022"></td>
+      <td><input data-metric="Current ratio (x)" data-year="2023"></td>
+      <td><input data-metric="Current ratio (x)" data-year="2024"></td>
+      <td>-</td>
+      <td>-</td>
+      <td></td></tr></tbody>
+  </table>
+</div>
+
+<!-- ANALYSIS -->
+<div class="card">
+  <div class="section-title">Automated Financial Analysis</div>
+  <div id="analysisBox" contenteditable="true" style="font-size:14px;line-height:1.5">
+    <!-- 初始内容为空，等待后端数据填充 -->
+    <p><em>Financial analysis will be automatically populated here after data fetch.</em></p>
+  </div>
+  <div class="note" style="margin-top:6px">You can edit the analysis text directly above after the auto-fill.</div>
+</div>
+
+
+<!-- SOURCES -->
+<div class="card">
+  <div class="section-title">Key Sources (non-editable)</div>
+  <div id="sourcesBox" style="font-size:13px;line-height:1.5;color:#374151">
+    <div class="note">Populated automatically from the financial analysis. Not editable.</div>
+    <ul id="sourcesList" style="padding-left:18px;margin-top:8px"><li>No explicit sources detected in the analysis text.</li></ul>
+  </div>
+</div>
+
+<!-- LIQUIDITY -->
+<div class="card">
+  <div class="section-title">Liquidity Metrics</div>
+  <table class="table">
+    <tbody><tr><th>Metric</th><th>2022</th><th>2023</th><th>2024</th><th>Notes</th></tr>
+    <tr>
+      <td>Liquidity headroom</td>
+      <td><input id="liq22"></td>
+      <td><input id="liq23"></td>
+      <td><input id="liq24"></td>
+      <td><textarea id="liqNotes"></textarea></td>
+    </tr>
+  </tbody></table>
+</div>
+
+<!-- OBLIGOR RATINGS -->
+<div class="card">
+  <div class="section-title">Obligor Ratings</div>
+  <div class="obligor-grid">
+    <div class="field">
+      <label>Internal Score</label>
+      <input id="intScore">
+    </div>
+    <div class="field">
+      <label>External Rating</label>
+      <input id="extRating2">
+    </div>
+    <div class="field">
+      <label>Rationale</label>
+      <textarea id="ratingRationale"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- RECOMMENDATION -->
+<div class="card">
+  <div class="section-title">Recommendation &amp; Action Plan</div>
+  <textarea id="recommend"></textarea>
+</div>
+
+<!-- RISKS -->
+<div class="card">
+  <div class="section-title">Key Risks &amp; Mitigants</div>
+  <textarea id="risks"></textarea>
+</div>
+
+</div><!-- /container -->
+
+<!-- FLOATING CHATBOT BUTTON -->
+<div id="chatFloatBtn" title="Ask about the analysis">💬</div>
+<div id="chatPanel">
+  <div style="font-weight:600;margin-bottom:6px">Analyst Chatbot</div>
+  <div class="note" style="margin-bottom:4px">Quick questions about the financial analysis &amp; sources.</div>
+  <textarea id="floatQ" placeholder="e.g. Which 10-K section explains the EBITDA decline?"></textarea>
+  <button class="btn" id="floatAsk" style="margin-top:6px;width:100%">Ask</button>
+  <div id="floatA" style="margin-top:8px;font-size:13px;color:#374151">—</div>
+</div>
+
+<!-- ONBOARDING OVERLAY -->
+<div id="tourOverlay" class="tour-overlay">
+  <div id="tourCard" class="tour-card">
+    <div id="tourStepLabel" class="tour-step-label"></div>
+    <div id="tourTitle" class="tour-title"></div>
+    <div id="tourBody" class="tour-body"></div>
+    <div class="tour-actions">
+      <button id="tourSkipBtn" class="btn-outline small-btn">Skip</button>
+      <button id="tourNextBtn" class="btn small-btn">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF EXPORT LIBS -->
+<script src="./Credit Memorandum — Final Editor v8.6_files/html2canvas.min.js.下载"></script>
+<script src="./Credit Memorandum — Final Editor v8.6_files/jspdf.umd.min.js.下载"></script>
+
+<script>
+// ===== Export PDF =====
+async function exportPDF() {
+  const { jsPDF } = window.jspdf;
+
+  const chatBtn = document.getElementById("chatFloatBtn");
+  const chatPanel = document.getElementById("chatPanel");
+  const tourOverlay = document.getElementById("tourOverlay");
+  if (chatBtn) chatBtn.classList.add("pdf-hide");
+  if (chatPanel) chatPanel.classList.add("pdf-hide");
+  if (tourOverlay) tourOverlay.classList.add("pdf-hide");
+
+  const container = document.querySelector(".container");
+
+  // 将输入控件替换成纯文本 div
+  const replacements = [];
+  const controls = container.querySelectorAll("input, textarea, select");
+  controls.forEach(el => {
+    const style = window.getComputedStyle(el);
+    let text = "";
+    if (el.tagName === "SELECT") {
+      const sel = el;
+      if (sel.selectedIndex >= 0) {
+        text = sel.options[sel.selectedIndex].text;
+      }
+    } else {
+      text = el.value || "";
+    }
+
+    const span = document.createElement("div");
+    span.textContent = text;
+    span.style.minHeight = el.offsetHeight + "px";
+    span.style.whiteSpace = "pre-wrap";
+    span.style.fontSize = style.fontSize;
+    span.style.lineHeight = style.lineHeight;
+    span.style.fontFamily = style.fontFamily;
+    span.style.padding = "4px 0";
+    span.style.border = "none";
+    span.style.background = "transparent";
+
+    const origDisplay = el.style.display;
+    el.style.display = "none";
+    el.parentNode.insertBefore(span, el.nextSibling);
+
+    replacements.push({ el, span, origDisplay });
+  });
+
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const marginX = 10;  // mm
+  const marginY = 10;  // mm
+  const usableWidth = pageWidth - marginX * 2;
+  const usableHeight = pageHeight - marginY * 2;
+
+  const canvas = await html2canvas(container, { scale: 2, useCORS: true });
+  const imgData = canvas.toDataURL("image/png");
+  const imgProps = pdf.getImageProperties(imgData);
+
+  const imgWidthPx = imgProps.width;
+  const imgHeightPx = imgProps.height;
+
+  const imgHeightMm = (imgHeightPx * usableWidth) / imgWidthPx;
+
+  let heightLeft = imgHeightMm;
+  let position = marginY;
+
+  pdf.addImage(imgData, "PNG", marginX, position, usableWidth, imgHeightMm);
+  heightLeft -= usableHeight;
+
+  while (heightLeft > 0) {
+    pdf.addPage();
+    position = marginY - (imgHeightMm - heightLeft);
+    pdf.addImage(imgData, "PNG", marginX, position, usableWidth, imgHeightMm);
+    heightLeft -= usableHeight;
+  }
+
+  pdf.save("credit_memo.pdf");
+
+  // 恢复输入控件
+  replacements.forEach(({ el, span, origDisplay }) => {
+    if (span && span.parentNode) span.parentNode.removeChild(span);
+    el.style.display = origDisplay || "";
+  });
+
+  if (chatBtn) chatBtn.classList.remove("pdf-hide");
+  if (chatPanel) chatPanel.classList.remove("pdf-hide");
+  if (tourOverlay) tourOverlay.classList.remove("pdf-hide");
+}
+</script>
+
+<script>
+// ===== Onboarding =====
+const TOUR_KEY = "credit_memo_tour_v8_6";
+let currentTourStep = 0;
+
+const TOUR_STEPS = [
+  {
+    id:0,
+    type:"modal",
+    stepLabel:"Step 0 — Welcome",
+    title:"Welcome!",
+    body:"This memo tool automatically fetches financials, narrative, key metrics and tables from public filings. Click Next for a quick 3-step tour."
+  },
+  {
+    id:1,
+    type:"anchor",
+    targetId:"buyerLookup",
+    stepLabel:"Step 1 — Enter buyer name",
+    title:"Step 1 — Enter buyer name",
+    body:"Start by typing the obligor name here. This is required before auto-fetching financials and tables."
+  },
+  {
+    id:2,
+    type:"anchor",
+    targetId:"refreshBuyer",
+    stepLabel:"Step 2 — Fetch data",
+    title:"Step 2 — Fetch data",
+    body:"Click “Fetch Data” to retrieve filings, financial metrics, liquidity, ratings and narrative directly from public sources."
+  },
+  {
+    id:3,
+    type:"anchor",
+    targetId:"refreshAnalysisBtn",
+    stepLabel:"Step 3 — Refresh analysis",
+    title:"Step 3 — Refresh analysis",
+    body:"After reviewing or adjusting the financial tables, click “Refresh Analysis” to regenerate a fully updated credit analysis using the final numbers."
+  }
+];
+
+function placeTourCard(step, opts = {}) {
+  const { skipScroll = false } = opts;
+  const overlay = document.getElementById("tourOverlay");
+  const card = document.getElementById("tourCard");
+  if (!overlay || !card) return;
+  if (!step) { endTour(); return; }
+
+  overlay.style.display = "block";
+
+  // MODAL STEP
+  if (step.type === "modal" || !step.targetId) {
+    card.style.position = "fixed";
+    card.style.top = "50%";
+    card.style.left = "50%";
+    card.style.transform = "translate(-50%, -50%)";
+    card.style.opacity = "1";
+    card.style.pointerEvents = "auto";
+    return;
+  }
+
+  const target = document.getElementById(step.targetId);
+  if (!target) {
+    card.style.position = "fixed";
+    card.style.top = "50%";
+    card.style.left = "50%";
+    card.style.transform = "translate(-50%, -50%)";
+    card.style.opacity = "1";
+    card.style.pointerEvents = "auto";
+    return;
+  }
+
+  card.style.opacity = "0";
+  card.style.pointerEvents = "none";
+
+  if (!skipScroll) {
+    try {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch(e) {
+      target.scrollIntoView();
+    }
+  }
+
+  setTimeout(() => {
+    const rect = target.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const cardWidth = 360;
+    const cardHeight = 200;
+
+    let left = rect.left;
+    let top = rect.bottom + 12;
+
+    if (step.id === 3) {
+      const btnRect = rect;
+      const btnCenter = btnRect.left + btnRect.width / 2;
+      left = btnCenter - cardWidth / 2;
+      top = btnRect.bottom + 12;
+
+      if (left < 20) left = 20;
+      if (left + cardWidth > viewportWidth - 20) {
+        left = viewportWidth - cardWidth - 20;
+      }
+
+      if (top + cardHeight > viewportHeight - 20) {
+        top = btnRect.top - cardHeight - 12;
+      }
+    } else {
+      if (left + cardWidth > viewportWidth - 20) {
+        left = viewportWidth - cardWidth - 20;
+      }
+      if (left < 20) left = 20;
+
+      if (top + cardHeight > viewportHeight - 20) {
+        top = rect.top - cardHeight - 12;
+      }
+      if (top < 20) top = 20;
+    }
+
+    card.style.position = "fixed";
+    card.style.top = top + "px";
+    card.style.left = left + "px";
+    card.style.transform = "translateY(0)";
+    card.style.opacity = "1";
+    card.style.pointerEvents = "auto";
+  }, skipScroll ? 100 : 300);
+}
+
+function renderTourStep() {
+  const overlay = document.getElementById("tourOverlay");
+  const card = document.getElementById("tourCard");
+  const labelEl = document.getElementById("tourStepLabel");
+  const titleEl = document.getElementById("tourTitle");
+  const bodyEl = document.getElementById("tourBody");
+  const nextBtn = document.getElementById("tourNextBtn");
+
+  if (!overlay || !card) return;
+  const step = TOUR_STEPS[currentTourStep];
+  if (!step) { endTour(); return; }
+
+  labelEl.textContent = step.stepLabel || "";
+  titleEl.textContent = step.title || "";
+  bodyEl.textContent = step.body || "";
+
+  if (nextBtn) {
+    nextBtn.textContent = (currentTourStep === TOUR_STEPS.length - 1) ? "Done" : "Next";
+  }
+
+  placeTourCard(step, { skipScroll: false });
+}
+
+function endTour() {
+  const overlay = document.getElementById("tourOverlay");
+  const card = document.getElementById("tourCard");
+  if (overlay) overlay.style.display = "none";
+  if (card) {
+    card.style.opacity = "0";
+    card.style.pointerEvents = "none";
+  }
+  try {
+    localStorage.setItem(TOUR_KEY, "done");
+  } catch(e){}
+}
+
+function startTour(startIndex=0) {
+  currentTourStep = startIndex;
+  renderTourStep();
+}
+
+function resetTour() {
+  try {
+    localStorage.removeItem(TOUR_KEY);
+  } catch(e){}
+  startTour(0);
+}
+
+function maybeStartTourOnLoad() {
+  try {
+    const flag = localStorage.getItem(TOUR_KEY);
+    if (!flag) {
+      startTour(0);
+    }
+  } catch(e){
+    startTour(0);
+  }
+}
+
+window.addEventListener("resize", () => {
+  const overlay = document.getElementById("tourOverlay");
+  if (!overlay || overlay.style.display !== "block") return;
+  const step = TOUR_STEPS[currentTourStep];
+  if (!step) return;
+  placeTourCard(step, { skipScroll: true });
+});
+</script>
+
+<script>
+// ===== 业务逻辑 JS =====
+function linkify(text) {
+  const urlRegex = /(https?:\/\/[^\s)"]+)/g;
+  return text.replace(urlRegex, url => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+  });
+}
+
+// ✅ 新的 Render API 地址
+const WORKER_URL = "https://credit-memo-api.onrender.com/api/chat";
+
+function extractContentFromResponses(data) {
+  if (!data) return "";
+
+  // 如果 worker 以后又包了一层 raw，这里也能自动剥掉
+  if (data.raw) {
+    return extractContentFromResponses(data.raw);
+  }
+
+  // 一些模型可能直接给 output_text
+  if (typeof data.output_text === "string" && data.output_text.trim()) {
+    return data.output_text;
+  }
+
+  // ✅ 适配 Azure /responses 返回：data.output 是一个数组
+  if (Array.isArray(data.output)) {
+    for (const item of data.output) {
+      if (!item) continue;
+
+      // 典型结构：{ role:"assistant", content:[ { type:"output_text", text:"..." }, ... ] }
+      if (Array.isArray(item.content)) {
+        const txt = item.content.map(part => {
+          if (!part) return "";
+          if (typeof part.text === "string") return part.text;
+          if (typeof part.output_text === "string") return part.output_text;
+          if (typeof part.content === "string") return part.content;
+          return "";
+        }).join("");
+        if (txt.trim()) return txt;
+      }
+
+      // 有些实现会长这样：{ output_text:{ content:[{text:"..."}] } }
+      if (item.output_text && Array.isArray(item.output_text.content)) {
+        const txt = item.output_text.content.map(part => part.text || "").join("");
+        if (txt.trim()) return txt;
+      }
+    }
+  }
+
+  // 兼容老的 chat/completions 结构，防止以后你切回 /chat/completions
+  if (data.choices && Array.isArray(data.choices) && data.choices[0]) {
+    const msg = data.choices[0].message;
+    if (msg) {
+      if (typeof msg.content === "string") return msg.content;
+      if (Array.isArray(msg.content)) {
+        return msg.content.map(part => part.text || "").join("");
+      }
+    }
+  }
+
+  return "";
+}
+
+function toNum(x) {
+  if (x === null || x === undefined) return null;
+  let s = String(x).trim();
+  if (!s) return null;
+  s = s.replace(/,/g, '').trim();
+  s = s.replace(/(USD|US\$|RMB|CNY|HKD|HK\$|EUR|EUR\$|GBP|£|€|¥|\$)/gi, '').trim();
+
+  let multiplier = 1;
+  const unitMatch = s.match(/(billion|bn|million|mn|m|thousand|k)/i);
+  if (unitMatch) {
+    const u = unitMatch[1].toLowerCase();
+    if (u === 'billion' || u === 'bn') multiplier = 1000;
+    else if (u === 'million' || u === 'mn' || u === 'm') multiplier = 1;
+    else if (u === 'thousand' || u === 'k') multiplier = 0.001;
+    s = s.replace(unitMatch[0], '').trim();
+  }
+  if (!s) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return null;
+  return n * multiplier;
+}
+
+function safeVal(id) {
+  var el = document.getElementById(id);
+  return el && typeof el.value === 'string' ? el.value : '';
+}
+
+// 信用指标表顺序
+const CREDIT_METRICS_ORDER = [
+  "Turnover",
+  "GP",
+  "GP%",
+  "EBITDA",
+  "EBITDA margin %",
+  "Net profit",
+  "Net Profit %",
+  "Cash & Bank",
+  "Inventory",
+  "Debt - Current",
+  "Debt - Non-current",
+  "Equity",
+  "Free cash flow",
+  "Cash Conv. Cycle (days)",
+  "Net debt / EBITDA (x)",
+  "EBITDA / Interest (x)",
+  "Current ratio (x)"
+];
+
+// 更强的 metric 名称匹配：既支持“通用叫法”，也支持我们 UI 的标准名字
+const CREDIT_METRIC_PATTERNS = {
+  "Turnover": [
+    /^turnover$/i,
+    /total\s+revenue/i,
+    /\brevenue\b/i,
+    /net\s+sales/i
+  ],
+  "GP": [
+    /^gp$/i,
+    /gross\s*profit/i,
+    /\bgross\s*profit\b/i
+  ],
+  "EBITDA": [
+    /^ebitda$/i,
+    /\bebitda\b/i,
+    /operating\s*income/i,
+    /operating\s*profit/i
+  ],
+  "Net profit": [
+    /^net\s*profit$/i,
+    /^net\s*income$/i,
+    /net\s*income/i,
+    /net\s*profit/i,
+    /profit attributable/i
+  ],
+  "Cash & Bank": [
+    /^cash\s*&\s*bank$/i,
+    /cash\s*&\s*equivalents/i,
+    /cash\s*&\s*cash\s*equivalents/i,
+    /cash and cash equivalents/i,
+    /\bcash\b/i
+  ],
+  "Inventory": [
+    /^inventory$/i,
+    /inventories/i
+  ],
+  // ★ 关键：显式包含 "Debt - Current" / "Debt - Non-current"
+  "Debt - Current": [
+    /^debt\s*-\s*current$/i,
+    /current\s+debt/i,
+    /short[-\s]?term\s+debt/i,
+    /short[-\s]?term\s+borrowings/i
+  ],
+  "Debt - Non-current": [
+    /^debt\s*-\s*non[-\s]?current$/i,
+    /non[-\s]?current\s+debt/i,
+    /long[-\s]?term\s+debt/i,
+    /long[-\s]?term\s+borrowings/i
+  ],
+  // ★ 关键：Equity 行也加上精确匹配
+  "Equity": [
+    /^equity$/i,
+    /total\s+equity/i,
+    /shareholders'?\s+equity/i,
+    /net\s+assets/i
+  ],
+  "Free cash flow": [
+    /^free\s*cash\s*flow$/i,
+    /free\s*cash*s*flow/i,
+    /\bFCF\b/i
+  ],
+  "Cash Conv. Cycle (days)": [
+    /^cash\s+conv\.\s*cycle\s*\(days\)$/i,
+    /cash conversion cycle/i
+  ],
+  "Net debt / EBITDA (x)": [
+    /^net\s+debt\s*\/\s*ebitda\s*\(x\)$/i,
+    /net\s+debt\s*\/\s*ebitda/i
+  ],
+  "EBITDA / Interest (x)": [
+    /^ebitda\s*\/\s*interest\s*\(x\)$/i,
+    /ebitda\s*\/\s*interest/i
+  ],
+  "Current ratio (x)": [
+    /^current\s+ratio\s*\(x\)$/i,
+    /current ratio/i
+  ]
+};
+
+// ====== 构建 Full 信用指标表 ======
+function buildCreditMetricsTable() {
+  const tbody = document.getElementById('finBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  CREDIT_METRICS_ORDER.forEach(name => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${name}</td>
+      <td><input data-metric="${name}" data-year="2022" /></td>
+      <td><input data-metric="${name}" data-year="2023" /></td>
+      <td><input data-metric="${name}" data-year="2024" /></td>
+      <td></td>
+      <td></td>
+      <td></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function setMetricValue(metricName, year, value) {
+  const sel = 'input[data-metric="' + metricName + '"][data-year="' + year + '"]';
+  const el = document.querySelector(sel);
+  if (!el) return;
+  if (value == null || value === '') return;
+  el.value = value;
+}
+
+function findRowByPatterns(rows, patterns) {
+  if (!Array.isArray(rows)) return null;
+  for (const row of rows) {
+    const name = String(row.metric || '').toLowerCase();
+    for (const p of patterns) {
+      if (p.test(name)) return row;
+    }
+  }
+  return null;
+}
+
+// ====== 从 AI full_financials 映射到信用指标表 ======
+function applyCreditMetricsFromFull(fullRows) {
+  if (!Array.isArray(fullRows)) fullRows = [];
+  const revRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Turnover"]);
+  const gpRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["GP"]);
+  const ebitdaRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["EBITDA"]);
+  const npRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Net profit"]);
+  const cashRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Cash & Bank"]);
+  const invRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Inventory"]);
+  const debtCurRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Debt - Current"]);
+  const debtNcRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Debt - Non-current"]);
+  const eqRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Equity"]);
+  const fcfRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Free cash flow"]);
+  const cccRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Cash Conv. Cycle (days)"]);
+  const ndEbitdaRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Net debt / EBITDA (x)"]);
+  const ebitdaIntRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["EBITDA / Interest (x)"]);
+  const curRatioRow = findRowByPatterns(fullRows, CREDIT_METRIC_PATTERNS["Current ratio (x)"]);
+
+  const years = [2022, 2023, 2024];
+
+  function val(row, year) {
+    if (!row) return null;
+    const key = 'y' + String(year);
+    return row[key];
+  }
+
+  years.forEach(y => {
+    const ys = String(y);
+    setMetricValue("Turnover", ys, val(revRow, y));
+    setMetricValue("GP", ys, val(gpRow, y));
+    setMetricValue("EBITDA", ys, val(ebitdaRow, y));
+    setMetricValue("Net profit", ys, val(npRow, y));
+    setMetricValue("Cash & Bank", ys, val(cashRow, y));
+    setMetricValue("Inventory", ys, val(invRow, y));
+    setMetricValue("Debt - Current", ys, val(debtCurRow, y));
+    setMetricValue("Debt - Non-current", ys, val(debtNcRow, y));
+    setMetricValue("Equity", ys, val(eqRow, y));
+    setMetricValue("Free cash flow", ys, val(fcfRow, y));
+    setMetricValue("Cash Conv. Cycle (days)", ys, val(cccRow, y));
+    setMetricValue("Net debt / EBITDA (x)", ys, val(ndEbitdaRow, y));
+    setMetricValue("EBITDA / Interest (x)", ys, val(ebitdaIntRow, y));
+    setMetricValue("Current ratio (x)", ys, val(curRatioRow, y));
+  });
+
+  // 根据 Turnover/GP/EBITDA/Net profit 自动算 Margin 和 Net debt / EBITDA（如未给出）
+  years.forEach(y => {
+    const ys = String(y);
+    const rev = toNum(document.querySelector('input[data-metric="Turnover"][data-year="' + ys + '"]')?.value);
+    const gp = toNum(document.querySelector('input[data-metric="GP"][data-year="' + ys + '"]')?.value);
+    const ebitda = toNum(document.querySelector('input[data-metric="EBITDA"][data-year="' + ys + '"]')?.value);
+    const np = toNum(document.querySelector('input[data-metric="Net profit"][data-year="' + ys + '"]')?.value);
+    const cash = toNum(document.querySelector('input[data-metric="Cash & Bank"][data-year="' + ys + '"]')?.value);
+    const debtCur = toNum(document.querySelector('input[data-metric="Debt - Current"][data-year="' + ys + '"]')?.value);
+    const debtNc = toNum(document.querySelector('input[data-metric="Debt - Non-current"][data-year="' + ys + '"]')?.value);
+
+    if (rev && gp != null) {
+      setMetricValue("GP%", ys, ((gp / rev) * 100).toFixed(1));
+    }
+    if (rev && ebitda != null) {
+      setMetricValue("EBITDA margin %", ys, ((ebitda / rev) * 100).toFixed(1));
+    }
+    if (rev && np != null) {
+      setMetricValue("Net Profit %", ys, ((np / rev) * 100).toFixed(1));
+    }
+
+    const totalDebt = (debtCur || 0) + (debtNc || 0);
+    const netDebt = (totalDebt && cash != null) ? (totalDebt - cash) : null;
+    const ndMetric = document.querySelector('input[data-metric="Net debt / EBITDA (x)"][data-year="' + ys + '"]');
+    if (netDebt != null && ebitda) {
+      const ratio = netDebt / ebitda;
+      if (ndMetric && !ndMetric.value) ndMetric.value = ratio.toFixed(2);
+    }
+  });
+}
+
+// ====== 从 Full 表重建 Summary（含 Debt 公式） ======
+function getFullMetricValue(metricName, year) {
+  const selector = 'input[data-metric="' + metricName + '"][data-year="' + year + '"]';
+  const el = document.querySelector(selector);
+  if (!el) return null;
+  return toNum(el.value);
+}
+
+function rebuildSummaryTables() {
+  const topBody = document.getElementById('summaryTopBody');
+  const bottomBody = document.getElementById('summaryBottomBody');
+  if (!topBody || !bottomBody) return;
+
+  topBody.innerHTML = '';
+  bottomBody.innerHTML = '';
+
+  const years = [2022, 2023, 2024];
+
+  function buildRow(label, key, isDebt) {
+    const vals = {};
+    years.forEach(y => {
+      if (isDebt) {
+        const cur = getFullMetricValue("Debt - Current", String(y));
+        const nc = getFullMetricValue("Debt - Non-current", String(y));
+        if (cur == null && nc == null) {
+          vals[y] = null;
+        } else {
+          vals[y] = (cur || 0) + (nc || 0);
+        }
+      } else {
+        vals[y] = getFullMetricValue(key, String(y));
+      }
+    });
+
+    let yoy23 = '-';
+    let yoy24 = '-';
+    const v22 = vals[2022];
+    const v23 = vals[2023];
+    const v24 = vals[2024];
+
+    if (v22 != null && v23 != null && v22 !== 0) {
+      yoy23 = ((v23 - v22) / v22 * 100).toFixed(1) + '%';
+    }
+    if (v23 != null && v24 != null && v23 !== 0) {
+      yoy24 = ((v24 - v23) / v23 * 100).toFixed(1) + '%';
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${label}</td>
+      <td>${vals[2022] != null ? vals[2022] : ''}</td>
+      <td>${vals[2023] != null ? vals[2023] : ''}</td>
+      <td>${vals[2024] != null ? vals[2024] : ''}</td>
+      <td>${yoy23}</td>
+      <td>${yoy24}</td>
+    `;
+    return tr;
+  }
+
+  // 上：Turnover / GP% / EBITDA
+  topBody.appendChild(buildRow("Turnover", "Turnover", false));
+  topBody.appendChild(buildRow("GP%", "GP%", false));
+  topBody.appendChild(buildRow("EBITDA", "EBITDA", false));
+
+  // 下：Debt / Equity / Free cash flow
+  bottomBody.appendChild(buildRow("Debt", "Debt", true)); // Debt = Current + Non-current
+  bottomBody.appendChild(buildRow("Equity", "Equity", false));
+  bottomBody.appendChild(buildRow("Free cash flow", "Free cash flow", false));
+}
+
+// ====== 只对 Full 表算 YoY，Summary 自己重建 ======
+function recomputeYoYFromTables() {
+  const fullRows = document.querySelectorAll('#finBody tr');
+  fullRows.forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length >= 7) {
+      const y22Input = tds[1].querySelector('input');
+      const y23Input = tds[2].querySelector('input');
+      const y24Input = tds[3].querySelector('input');
+      const y22 = toNum(y22Input && y22Input.value);
+      const y23 = toNum(y23Input && y23Input.value);
+      const y24 = toNum(y24Input && y24Input.value);
+      let yoy23 = '-', yoy24 = '-';
+      if (y22 != null && y23 != null && y22 !== 0) yoy23 = ((y23 - y22) / y22 * 100).toFixed(1) + '%';
+      if (y23 != null && y24 != null && y23 !== 0) yoy24 = ((y24 - y23) / y23 * 100).toFixed(1) + '%';
+      tds[4].textContent = yoy23;
+      tds[5].textContent = yoy24;
+    }
+  });
+
+  // Full 更新之后，重建 Summary（含 Debt 公式）
+  rebuildSummaryTables();
+}
+
+// ====== 从 Analysis 里提取 Source（增强版：优先用 URL，其次用 Source: 文本） ======
+function populateSourcesFromAnalysis() {
+  const listEl = document.getElementById('sourcesList');
+  const box = document.getElementById('analysisBox');
+  if (!listEl || !box) return;
+
+  const html = box.innerHTML || '';
+  const text = box.innerText || box.textContent || '';
+  const items = [];
+  const seen = new Set();
+
+  function addItem(label, url) {
+    if (!url) return;
+    const key = (label + '|' + url).toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    items.push({ label: label || url, url });
+  }
+
+  // 1）先找 "Source: xxx" 这样的片段，如果里面本身就带 URL，就直接用
+  const sourceRegex = /(Source:\s*[^)<\n]+|\(Source:\s*[^)]+\))/gi;
+  let m;
+  while ((m = sourceRegex.exec(html)) !== null) {
+    let raw = m[0];
+    raw = raw.replace(/^\(/, '').replace(/\)$/, '');
+    const parts = raw.split(/Source:\s*/i);
+    const textPart = (parts[1] || parts[0] || '').trim();
+    if (!textPart) continue;
+
+    // 如果这段文字里有 http/https 链接，就优先用真实链接
+    const urlMatch = textPart.match(/https?:\/\/[^\s)]+/i);
+    if (urlMatch) {
+      addItem(textPart, urlMatch[0]);
+    } else {
+      // 没有明确 URL，就退回到 Google 搜索
+      const q = encodeURIComponent(textPart);
+      const url = "https://www.google.com/search?q=" + q;
+      addItem(textPart, url);
+    }
+  }
+
+  // 2）再从全文里单独抓所有 URL（避免分析里直接贴了链接但没写 Source:）
+  const urlRegex = /https?:\/\/[^\s)]+/gi;
+  let u;
+  while ((u = urlRegex.exec(text)) !== null) {
+    const url = u[0];
+    addItem(url, url);
+  }
+
+  // 渲染列表
+  listEl.innerHTML = '';
+  if (!items.length) {
+    const li = document.createElement('li');
+    li.textContent = 'No explicit sources detected in the analysis text.';
+    listEl.appendChild(li);
+    return;
+  }
+
+  items.forEach(it => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = it.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = it.label;
+    li.appendChild(a);
+    listEl.appendChild(li);
+  });
+}
+
+// ====== Auto Fetch via Worker ======
+async function autoFetchBuyer() {
+  const buyer = (safeVal('buyerLookup') || '').trim();
+  if (!buyer) {
+    alert('Please enter buyer name first');
+    return;
+  }
+
+  const btn = document.getElementById('refreshBuyer');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Fetching…';
+  }
+
+  const systemPrompt = `
+You are a Senior Credit Risk Analyst.
+
+Your task is to produce a complete credit memorandum strictly following the required JSON schema.
+You must always return valid JSON — no markdown, no commentary, no explanations outside JSON.
+
+============================================================
+ABSOLUTE RULES
+============================================================
+1. Output must be 100% valid JSON.
+2. No markdown, no backticks, no extra commentary.
+3. Do NOT add or remove top-level fields from the schema.
+4. Any missing data → use null (do NOT drop the field).
+5. For narrative text sections: use clear, concise, professional English.
+6. NEVER invent financial numbers when they can be obtained or derived from filings.
+7. If something is truly not disclosed, set it to null (do not fabricate).
+8. NEVER hallucinate rating agencies or debt instruments.
+9. For any obligor with complete financial statements (annual report and notes), you MUST either:
+   - directly map the disclosed line items to the required metrics, or
+   - compute the metrics from available components.
+   Only if it is genuinely impossible to compute a metric should it remain null.
+
+============================================================
+DATA SOURCE PRIORITY (STRICT)
+============================================================
+When retrieving financial or business data, follow this order:
+
+1. Company official filings (highest priority):
+   - Annual Report (PDF)
+   - Form 20-F / 10-K
+   - Interim / Quarterly reports (PDF)
+   - Earnings releases
+
+2. If a metric is not explicitly disclosed but can be calculated from available figures,
+   you MUST compute it (e.g. margins, FCF, Net debt / EBITDA, Current ratio).
+
+3. If still missing → use reliable third-party data ONLY to fill gaps:
+   - Bloomberg extracts (if visible through news)
+   - Reuters
+   - MarketWatch
+   - Yahoo Finance
+   (Never override official PDF numbers with secondary sources.)
+
+4. If still unavailable → null.
+
+============================================================
+HOW TO LOCATE ANNUAL / QUARTERLY REPORTS ON THE WEB
+============================================================
+You have access to web search and webpage/PDF-reading tools.
+You MUST use those tools to get live, up-to-date filings instead of
+relying on model memory, especially for the last 2–3 years.
+
+GENERAL STRATEGY
+- Never guess URLs.
+- Always start from an external web search and/or the company’s
+  Investor Relations (IR) website or the relevant stock-exchange /
+  regulator site (e.g. SEC for US, HKEX for Hong Kong, etc.).
+- For every obligor name given by the user, follow this sequence:
+
+STEP 1 — INITIAL SEARCH
+1. Run a web search with queries like:
+   "<company legal name> investor relations annual report pdf"
+   "<company legal name> annual report <latest year> pdf"
+   "<company legal name> quarterly report pdf"
+2. From the search results, IDENTIFY the OFFICIAL domains only, e.g.:
+   - The company’s own domain (example: pddholdings.com, walmart.com)
+   - Its dedicated IR subdomain (example: ir.<domain>, investor.<domain>)
+   - The primary listing regulator / exchange:
+     - For US: sec.gov (10-K, 20-F, 10-Q)
+     - For Hong Kong: hkexnews.hk
+     - For other markets: official exchange or regulator sites.
+
+STEP 2 — NAVIGATE OFFICIAL IR PAGES
+For large listed companies (like PDD, Walmart, etc.), you MUST:
+1. Open the Investor Relations site and look for sections named:
+   - "Financial Information"
+   - "Annual Reports"
+   - "Results / Reports"
+   - "Quarterly Reports" or "Interim Reports"
+   - "SEC Filings" (for US listings).
+2. Within these sections, locate links that clearly correspond to:
+   - Latest ANNUAL REPORT / Form 10-K / Form 20-F
+   - Latest INTERIM or QUARTERLY REPORTS (Q1, Q2, Q3, Q4 or Half-year).
+
+STEP 3 — SELECT CORRECT YEARS / QUARTERS
+1. Determine the company’s reporting calendar and latest available period.
+2. For FULL-YEAR data:
+   - Select the latest three completed financial years.
+   - Map them to y2022, y2023, y2024 in the JSON (see rules below).
+3. For PARTIAL CURRENT YEAR (ongoing fiscal year):
+   - Identify the latest available quarter (e.g. 2025 Q3).
+   - ALSO locate the same quarter from the previous year (e.g. 2024 Q3) for YoY analysis.
+4. If no quarter for the current year is yet available:
+   - Use ONLY the last three full years for numerical tables.
+   - Do NOT fabricate a quarter.
+
+STEP 4 — DOWNLOAD & READ FILINGS
+1. Once you have identified the correct PDF or HTML filing:
+   - Use your file / URL tools to OPEN or DOWNLOAD that document.
+   - Do this for EACH selected year and each relevant quarter.
+   - Always prefer PDFs and official HTML filings over secondary summaries.
+2. Read the downloaded filings to extract all required financial line
+   items and notes. Do NOT rely on memory of past numbers.
+
+STEP 5 — AVOID NON-OFFICIAL OR OUTDATED SOURCES
+1. If news sites, blogs or data aggregators appear in search results,
+   you may only use them as a last resort to fill minor gaps and ONLY
+   when the official filings truly do not disclose a value.
+2. Never treat 3rd-party summaries as the primary source of truth
+   when an official filing is available.
+3. If you cannot confidently identify any official filing for a given
+   year or quarter, leave the relevant metrics as null and say so in
+   the analysis.
+
+SPECIAL EXAMPLES (FOR CLARITY ONLY)
+- For a NASDAQ / NYSE company (e.g. Walmart, PDD Holdings listed in US):
+  1) Use its own Investor Relations site first ("Annual Reports" /
+     "Quarterly Results").
+  2) If not sufficient, then go to sec.gov and search by company name
+     or ticker, then open the latest 10-K / 20-F and 10-Q filings.
+- For a Hong Kong–listed company:
+  1) Use the company’s IR site for "Annual Reports" and "Interim Reports".
+  2) Cross-check or supplement with filings on hkexnews.hk when needed.
+
+You MUST follow this web-navigation process every time you
+prepare the JSON, so that the numbers for the latest years and quarters
+come from the most recent official filings.
+
+============================================================
+BUYER INFORMATION SCHEMA (STRICT MAPPING)
+============================================================
+You must ALWAYS return a "buyer" object with EXACTLY the following keys.
+Do NOT rename or remove any of them.
+
+"buyer": {
+  "borrower": "",
+  "obligor_legal_name": "",
+  "group_parent": "",
+  "country": "",
+  "country_of_incorp": "",
+  "business_description": "",
+  "business_activities": "",
+  "key_customers_main_countries": "",
+  "website": "",
+  "market_cap": "",
+  "external_rating": "",
+  "internal_rating_current": "",
+  "internal_rating_proposed": ""
+}
+
+Mapping rules:
+- "borrower": main obligor / borrower used in credit documentation. For listed groups,
+  typically the listed operating company or main borrowing entity.
+- "obligor_legal_name": full legal name including jurisdiction / legal form (e.g. "PDD Holdings Inc.").
+- "group_parent": ultimate or direct listed parent company, if different from borrower.
+- "country": main country of business operations / headquarters.
+- "country_of_incorp": jurisdiction of incorporation (from filings).
+- "business_description": 2–4 sentences summarising the group’s business model, segments and scale.
+- "business_activities": 3–8 bullet-style sentences (plain text) describing key activities and revenue drivers.
+- "key_customers_main_countries": brief description of key customer groups and main geographic markets.
+- "website": main corporate website URL.
+- "market_cap": latest approximate market cap in USD (plain text, e.g. "US$180bn as of Nov 2024").
+- "external_rating": actual public rating(s) and agencies if they exist (e.g. "S&P: BBB+ (stable)").
+  If truly not rated, use "Not publicly rated".
+- "internal_rating_current": current internal rating IF explicitly given by the user/system.
+  Otherwise use null (do NOT fabricate).
+- "internal_rating_proposed": proposed internal rating IF you can infer a clear level from
+  the analysis; otherwise null.
+
+For large listed companies with full public filings, you MUST fill all buyer fields except
+internal ratings where information is not available. Use null only where there is genuinely
+no public information.
+
+============================================================
+FINANCIAL DATA RULES (METRICS DEFINITIONS)
+============================================================
+You must follow these exact metrics and calculation logic:
+
+Turnover (Revenue)
+- Use revenue from the consolidated P&L, not GMV and not gross transaction value.
+- Typical line names: "Total revenue", "Net revenues", "Net sales".
+
+Gross Profit (GP)
+- GP = Revenue - Cost of revenue / Cost of sales.
+- Typical line names: "Gross profit".
+
+Gross Profit Margin (GP%)
+- GP% = GP / Revenue * 100.
+
+EBITDA
+- EBITDA = Operating profit (or EBIT) + Depreciation + Amortisation.
+- If not provided as a standalone line, you MUST compute it when components exist.
+- Typical line names: "EBITDA", "Adjusted EBITDA", "Operating profit", "Income from operations".
+
+EBITDA Margin (EBITDA margin %)
+- EBITDA margin % = EBITDA / Revenue * 100.
+
+Net Profit
+- Consolidated profit attributable to shareholders (after tax, after minorities).
+- If both total net income and profit attributable to owners are available, use the latter.
+- Typical line names: "Net income attributable to shareholders", "Profit for the year attributable to owners".
+
+Net Profit % (Net Margin)
+- Net Profit % = Net Profit / Revenue * 100.
+
+Cash & Bank
+- Cash and bank balances.
+- Exclude restricted cash when separately disclosed, unless only total cash is available.
+- Typical line names: "Cash and cash equivalents", "Cash and cash equivalents and short-term deposits" (include).
+
+Inventory
+- Inventory line from balance sheet only.
+- Typical line names: "Inventories".
+
+Debt — Current (Debt - Current)
+- Short-term INTEREST-BEARING liabilities only, including for example:
+  • Short-term bank loans / borrowings
+  • Current portion of long-term bank loans or other loans
+  • Current portion of bonds / notes / debentures
+  • Current portion of convertible bonds
+  • Current portion of lease liabilities (IFRS 16)
+- DO NOT include trade and other payables, accrued expenses, customer advances,
+  contract liabilities, tax payables, provisions, or any non-interest-bearing items.
+- For IFRS issuers like PDD Holdings, typical components include:
+  "Convertible bonds, current portion", "Short-term borrowings",
+  current portion of "Lease liabilities", and similar items.
+
+Debt — Non-current (Debt - Non-current)
+- NON-CURRENT interest-bearing liabilities only, including for example:
+  • Long-term bank loans / borrowings
+  • Bonds / notes / debentures
+  • Non-current portion of convertible bonds
+  • Non-current portion of lease liabilities (IFRS 16)
+- Exclude non-interest-bearing items such as deferred revenue, provisions,
+  deferred tax liabilities and other operating liabilities.
+
+Total Debt
+- Total Debt = (Debt - Current) + (Debt - Non-current).
+- You MUST always compute Total Debt internally, even if not shown as a separate line.
+- For IFRS issuers (example PDD), this means summing:
+  - Convertible bonds (current and non-current portions),
+  - All bank loans and similar borrowings,
+  - Lease liabilities (current and non-current),
+  and excluding trade and other payables, customer advances, payables to merchants, etc.
+
+Equity
+- Total shareholders’ equity attributable to owners.
+- Typical line names: "Total equity attributable to shareholders of the company",
+  "Total shareholders’ equity".
+
+Free Cash Flow (Free cash flow)
+- Free cash flow = Net cash from operating activities - CAPEX.
+- Use “Purchase of property, plant and equipment”, “Additions to PP&E”, or similar as CAPEX.
+- If the ingredients exist, you MUST compute FCF.
+- For companies with significant acquisition CAPEX, discuss this in the analysis.
+
+Cash Conv. Cycle (Cash Conv. Cycle (days))
+- Cash conversion cycle (CCC) = DIO + DSO – DPO.
+- You MUST compute CCC whenever the following ingredients are available in the filings, even if you do not output them as separate metrics:
+  • Revenue (Turnover) from the P&L
+  • Cost of revenue / Cost of sales (COGS) from the P&L
+  • Inventory balance from the balance sheet
+  • Trade receivables (or receivables from customers / online platforms)
+  • Trade payables (or payables to suppliers / merchants)
+- Use standard definitions:
+  • DIO (days inventory outstanding) = average inventory / COGS × 365
+  • DSO (days sales outstanding) = average trade receivables / Revenue × 365
+  • DPO (days payables outstanding) = average trade payables / COGS × 365
+  • Averages are computed as (opening balance + closing balance) / 2 whenever two year-end points are available; otherwise use the single disclosed balance as an approximation.
+- For IFRS e-commerce issuers (such as PDD Holdings), if trade receivables or trade payables are split by type, you should focus on balances directly linked to the core platform business (e.g. receivables from online payment platforms, payables to merchants).
+- Only when you genuinely cannot identify reasonable inputs for any of revenue, COGS, inventory, trade receivables or trade payables should you leave "Cash Conv. Cycle (days)" as null, and you must briefly explain this in the financial_analysis section.
+
+Net debt / EBITDA (x)
+- Net Debt = Total Debt - Cash & Bank.
+- Net debt / EBITDA (x) = Net Debt / EBITDA.
+- If Total Debt and Cash & Bank are known and EBITDA is non-zero, you MUST compute this.
+- If Net Debt is negative, return a negative ratio (e.g. -1.2).
+- If EBITDA is close to zero or negative, set the ratio to null and explain in analysis.
+
+EBITDA / Interest (x)
+- EBITDA / Interest (x) = EBITDA / interest expense.
+- Use total finance costs related to interest-bearing debt.
+- If interest expense is zero or not disclosed → null.
+
+Current ratio (x)
+- Current ratio (x) = Current assets / Current liabilities.
+- Compute whenever the two components are available.
+
+GLOBAL CURRENCY & UNIT RULES (VERY IMPORTANT)
+- All monetary figures returned in "summary_financials", "full_financials", "liquidity" and any other numeric fields must be expressed in US dollars in millions (US$m).
+- This means:
+  • Values such as revenue, EBITDA, net profit, cash, debt, equity, free cash flow, etc. must all be converted into USD and then divided by 1,000,000.
+  • The tables therefore show numbers like 18,368 (US$m), not 18,368,000,000.
+- Step 1 — Identify reporting currency:
+  • Read the primary reporting currency in the financial statements (e.g. RMB, EUR, HKD, etc.).
+  • If the financial statements are already presented in USD, you may use those amounts directly (only scale them to millions where necessary).
+- Step 2 — Determine appropriate FX rates:
+  • FIRST, look for exchange-rate tables or notes in the financial statements (e.g. “translation of RMB into US$ is made at X.XX RMB to US$1” or yearly average / closing rates).
+  • If the filing provides specific USD equivalents for the main line items (e.g. a column in US$), you may rely on those directly as the USD amounts for that period.
+  • ONLY if no usable FX information is provided in the filing, you may use external data via tools (e.g. central bank or well-known FX data providers) to obtain an approximate average annual USD exchange rate for that currency and year.
+- Step 3 — Perform the conversion:
+  • For each year and each metric:
+    - Convert the original reporting-currency amount into USD using the appropriate rate (full-year average or year-end rate, consistent with how the company presents USD translations in the notes).
+    - Then convert the USD amount into US$m by dividing by 1,000,000.
+  • Use the same currency and unit (US$m) consistently across all metrics and years, so that ratios derived from them remain internally consistent.
+- Step 4 — Ratios and percentages:
+  • Ratios such as Net debt / EBITDA (x), EBITDA / Interest (x) and Current ratio (x), and margins such as GP% and EBITDA margin %, are dimensionless and do not depend on currency; however, when you compute them you should base the calculation on the USD-translated figures to keep the analysis internally coherent.
+- In the financial_analysis narrative you should briefly state that all monetary figures discussed are in US$ million, and if relevant, mention that original financial statements are denominated in a different currency (e.g. RMB) and have been translated to USD using the company’s disclosed exchange rates or, where necessary, approximate market rates.
+
+============================================================
+METRIC MAPPING & FALLBACK RULES (VERY IMPORTANT)
+============================================================
+You must map heterogeneous financial statement line items to the
+standard metric names used in the JSON and UI:
+
+Required metric names (exact spelling):
+  "Turnover", "GP", "GP%", "EBITDA", "EBITDA margin %",
+  "Net profit", "Net Profit %",
+  "Cash & Bank", "Inventory",
+  "Debt - Current", "Debt - Non-current",
+  "Equity", "Free cash flow",
+  "Cash Conv. Cycle (days)",
+  "Net debt / EBITDA (x)", "EBITDA / Interest (x)",
+  "Current ratio (x)".
+
+For each metric:
+1. FIRST look for an exact or very close line item in the filings
+   (allowing for synonyms such as "Net revenues" for Turnover, etc.).
+2. If the exact metric is not disclosed but its components are,
+   you MUST compute the metric (e.g. EBITDA from EBIT + D&A,
+   Free cash flow from CFO - CAPEX, Net debt from Debt and Cash).
+3. Only if both the metric and all necessary components are missing,
+   leave it as null and explain briefly in "financial_analysis" why.
+
+For any company with complete audited financial statements and notes,
+you should normally be able to populate or compute ALL of the above
+metrics for the last three fiscal years.
+
+============================================================
+PERIOD SELECTION RULES
+============================================================
+You must always base your numeric tables on THREE consecutive
+completed financial years. These map to keys y2022, y2023, y2024
+in the JSON, regardless of the actual calendar years. For example:
+- If the latest completed fiscal years are FY2023, FY2024, FY2025, then:
+  - y2022 = FY2023
+  - y2023 = FY2024
+  - y2024 = FY2025
+
+CASE A — NO CURRENT-YEAR QUARTERLY REPORT YET:
+- If the current fiscal year has NO published quarterly/interim report
+  at all (not even Q1), you MUST:
+  1) Use ONLY the last three full fiscal years in all numeric tables.
+  2) Compute full-year YoY on this basis, for example:
+     - y2023 vs y2022
+     - y2024 vs y2023
+  3) Leave all quarterly-related fields
+     ("latest_quarter", "latest_quarter_label",
+      "prev_year_same_quarter", "prev_year_same_quarter_label",
+      "latest_quarter_yoy") as null.
+  4) Focus your short-term trend discussion on the latest full-year
+     YoY movements.
+
+CASE B — CURRENT-YEAR QUARTERLY REPORT EXISTS:
+- If at least one quarterly / interim report for the current fiscal
+  year exists (e.g. 2025 Q1, Q2 or Q3), you MUST:
+  1) Still use THREE completed fiscal years for y2022, y2023, y2024
+     (do NOT overwrite them with partial-year data).
+  2) Identify the LATEST available quarter in the current fiscal year
+     (e.g. 2025 Q3).
+  3) Identify the SAME quarter in the PRIOR fiscal year (e.g. 2024 Q3).
+  4) For each metric:
+     - Set "latest_quarter" to the value for the latest quarter
+       of the current fiscal year (e.g. 2025 Q3).
+     - Set "prev_year_same_quarter" to the value for the same
+       quarter in the prior year (e.g. 2024 Q3).
+     - Compute "latest_quarter_yoy" as the percentage change of
+       latest_quarter vs prev_year_same_quarter
+       (e.g. 2025 Q3 vs 2024 Q3).
+     - Set "latest_quarter_label" and
+       "prev_year_same_quarter_label" to human-readable labels
+       such as "2025 Q3" and "2024 Q3".
+  5) In your narrative financial_analysis you MUST clearly discuss:
+     - Full-year YoY (latest full year vs previous full year), AND
+     - Latest-quarter YoY (current-year latest quarter vs prior-year
+       same quarter), explaining key drivers and credit impact.
+
+Under no circumstances may you fabricate a quarter that has not been
+reported. If you cannot find a valid quarterly filing, fall back to
+CASE A and use only full-year data.
+
+============================================================
+FULL_FINANCIALS SCHEMA & METRIC MAPPING (STRICT)
+============================================================
+You MUST always return "full_financials" as an array of objects with at
+least the following keys for EACH metric:
+
+"full_financials": [
+  {
+    "metric": "Turnover",
+
+    "y2022": <number or null>,
+    "y2023": <number or null>,
+    "y2024": <number or null>,
+
+    "latest_quarter": <number or null>,
+    "latest_quarter_label": "<string or null>",
+    "prev_year_same_quarter": <number or null>,
+    "prev_year_same_quarter_label": "<string or null>",
+    "latest_quarter_yoy": "<string or null>"
+  },
+  ...
+]
+
+Requirements:
+- Use EXACT metric names so that the UI can map them correctly:
+  "Turnover", "GP", "GP%", "EBITDA", "EBITDA margin %",
+  "Net profit", "Net Profit %",
+  "Cash & Bank", "Inventory",
+  "Debt - Current", "Debt - Non-current",
+  "Equity", "Free cash flow",
+  "Cash Conv. Cycle (days)",
+  "Net debt / EBITDA (x)", "EBITDA / Interest (x)",
+  "Current ratio (x)".
+
+- You MUST include at least one row for each of the above metrics.
+- The keys "metric", "y2022", "y2023", "y2024" and "latest_quarter"
+  must always exist in every row (nullable allowed) so that the frontend
+  can safely consume them.
+- When CASE A (no current-year quarter) applies:
+  - "latest_quarter", "latest_quarter_label",
+    "prev_year_same_quarter", "prev_year_same_quarter_label",
+    "latest_quarter_yoy" MUST all be null.
+- When CASE B (current-year quarter exists) applies:
+  - You MUST populate "latest_quarter" and
+    "prev_year_same_quarter" and compute "latest_quarter_yoy".
+  - The annual keys y2022/y2023/y2024 MUST remain full-year numbers,
+    not partial-year or quarterly values.
+
+============================================================
+SUMMARY_FINANCIALS
+============================================================
+The frontend will recompute summary tables from full_financials.
+Still, you MUST include a "summary_financials" array with at least
+these rows: "Turnover", "GP%", "EBITDA", "Debt", "Equity",
+"Free cash flow".
+
+Each element:
+
+{
+  "metric": "Turnover",
+  "y2022": <number or null>,
+  "y2023": <number or null>,
+  "y2024": <number or null>,
+  "yoy_23_vs_22": "<string or null, e.g. '25.3%'>",
+  "yoy_24_vs_23": "<string or null>"
+}
+
+For "Debt" in summary_financials, you MUST use Total Debt
+(Current + Non-current) as defined above.
+
+============================================================
+LIQUIDITY & RATINGS
+============================================================
+"liquidity": {
+  "y2022": <number or null>,
+  "y2023": <number or null>,
+  "y2024": <number or null>,
+  "notes": "<text>"
+}
+
+- "y2022/23/24" should reflect approximate liquidity headroom or key liquidity metric
+  (e.g. cash + undrawn committed facilities) in USD millions if available.
+- "notes": short paragraph explaining liquidity position, headroom and key facilities.
+
+"ratings": {
+  "internal_score": "<text or null>",
+  "external_rating": "<text or null>",
+  "rationale": "<text>"
+}
+
+- "external_rating" must reflect actual public ratings only. If not publicly rated, say
+  "Not publicly rated".
+- "rationale" must clearly link leverage, liquidity and business risk to the rating view.
+
+============================================================
+FINANCIAL ANALYSIS REQUIREMENTS
+============================================================
+You MUST produce a detailed professional analysis in "financial_analysis" covering at least:
+
+1. Revenue and profitability drivers (growth/decline causes).
+2. Extraordinary items vs. core business (quality of earnings).
+3. Cost structure and margin variance (including >10% movements).
+4. Working capital changes (including any large swings and their drivers).
+5. Liquidity assessment (cash, facilities, headroom, covenant risk).
+6. Cash flow stability and FCF strength.
+7. Capital structure & leverage evaluation (Net debt / EBITDA, interest cover, etc.).
+8. Debt profile and refinancing risk (maturities, dependence on markets/banks).
+9. Inventory quality and turnover analysis (including model-specific points).
+10. Short-term and medium-term outlook (12–18 months), focusing on sustainability of performance, cash generation and expected credit trajectory. Do NOT list detailed key risks or mitigants here.
+
+For any YoY change >10% in revenue, EBITDA, net profit, or key leverage metrics, you MUST
+explicitly explain:
+- the main cause,
+- whether it is structural or temporary,
+- and the credit impact.
+
+IMPORTANT SCOPE SEPARATION:
+
+- The detailed list of key risks and mitigants must be provided in the top-level field "risks".
+- In "financial_analysis" you may briefly mention risk drivers only insofar as they explain movements
+  in revenue, margins, leverage, liquidity, etc., but you MUST NOT create a separate section or
+  heading titled "Key risks", "Key risks & mitigants", "Risks and mitigants" or anything similar.
+- You also MUST NOT start a paragraph or sentence with "Key risks include" (or similar wording),
+  and you must not give a long enumerated list of risks (i), (ii), (iii), etc. inside financial_analysis.
+- Keep "financial_analysis" focused on numeric trends, drivers and credit implications,
+  and leave the structured risk & mitigant discussion to the dedicated "risks" field.
+
+If some data is missing, provide reasoned inferences based on business model and industry
+norms, but clearly flag where you are inferring rather than quoting.
+
+============================================================
+RECOMMENDATION & RISKS
+============================================================
+"recommendation" should summarise:
+- proposed internal rating (if any),
+- recommended credit limit / stance,
+- key conditions, covenants or monitoring points.
+
+"risks" should summarise:
+- major business, financial, governance and country risks,
+- and concrete mitigating factors (structure, guarantees, insurance, covenants, etc.).
+
+============================================================
+OUTPUT FORMAT (STRICT JSON SCHEMA)
+============================================================
+Return ONE single JSON object with ALL of the following top-level keys:
+
+{
+  "exec_summary": "<string>",
+  "key_highlights": "<string>",
+  "buyer": { ... },              // as specified above
+  "summary_financials": [ ... ],
+  "full_financials": [ ... ],
+  "liquidity": { ... },
+  "ratings": { ... },
+  "financial_analysis": "<string or HTML>",
+  "recommendation": "<string>",
+  "risks": "<string>"
+}
+
+Rules:
+- Do NOT add any extra top-level keys.
+- All keys must exist even if some values are null.
+- The entire response MUST be valid JSON. No leading/trailing text, no comments.
+
+============================================================
+END OF SYSTEM PROMPT
+============================================================
+`;
+
+  const userPrompt = "Prepare the JSON credit pack for obligor: " + buyer + ". Follow the schema exactly and output only the JSON object.";
+
+  const payload = {
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
+    ]
+  };
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+        const data = await res.json();
+    console.log("Worker response:", data);
+
+    // 如果 Worker 自己标记了 error，先提示一下（但仍然尝试读取内容）
+    if (data && data.error) {
+      console.error("Worker reported error:", data.error);
+    }
+
+    const content = extractContentFromResponses(data);
+
+    if (!content) {
+      alert("AI did not return any content; see console.");
+      return;
+    }
+
+    let j;
+    try {
+      j = JSON.parse(content);
+      // ===== 新增调试信息：直接在控制台看 full_financials 里到底有哪些 metric =====
+      console.log("Parsed memo JSON:", j);
+      if (Array.isArray(j.full_financials)) {
+        console.log("full_financials from model:", j.full_financials);
+      } else {
+        console.log("No full_financials array returned by model.");
+      }
+    } catch (e) {
+      console.error("JSON parse failed:", e, content);
+      const execBox = document.getElementById('execSummary');
+      if (execBox) execBox.value = content;
+      alert("AI returned non-JSON text. Raw text placed into Executive Summary.");
+      return;
+    }
+
+    if (j.exec_summary) {
+      const el = document.getElementById('execSummary');
+      if (el) el.value = j.exec_summary;
+    }
+    if (j.key_highlights) {
+      const el = document.getElementById('highlights');
+      if (el) el.value = j.key_highlights;
+    }
+    if (j.recommendation) {
+      const el = document.getElementById('recommend');
+      if (el) el.value = j.recommendation;
+    }
+    if (j.risks) {
+      const el = document.getElementById('risks');
+      if (el) el.value = j.risks;
+    }
+
+    if (j.financial_analysis) {
+      const box = document.getElementById('analysisBox');
+      if (box) {
+        const fa = j.financial_analysis;
+        if (/<\/?[a-z][\s\S]*>/i.test(fa)) {
+          box.innerHTML = fa;
+        } else {
+          box.innerHTML = fa
+            .split(/\n\n+/)
+            .map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>")
+            .join("");
+        }
+      }
+      populateSourcesFromAnalysis();
+    }
+
+    if (j.buyer) {
+      const b = j.buyer;
+      const map = [
+        ['companyName', 'borrower'],
+        ['groupParentName', 'group_parent'],
+        ['obligorLegalName', 'obligor_legal_name'],
+        ['country', 'country'],
+        ['countryOfIncorp', 'country_of_incorp'],
+        ['business', 'business_description'],
+        ['coreBusinessActivities', 'business_activities'],
+        ['coreBusinessCustomers', 'key_customers_main_countries'],
+        ['coreBusinessWebsite', 'website'],
+        ['marketCap', 'market_cap'],
+        ['externalRating', 'external_rating'],
+        ['internalRatingCurrent', 'internal_rating_current'],
+        ['internalRatingProposed', 'internal_rating_proposed']
+      ];
+      map.forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (el && b[key] != null) el.value = b[key];
+      });
+    }
+
+    // Summary 不再直接使用模型的 summary_financials，由 Full 表 + 前端逻辑统一计算
+    {
+      const rows = Array.isArray(j.full_financials) ? j.full_financials : [];
+      buildCreditMetricsTable();
+      applyCreditMetricsFromFull(rows);
+    }
+
+    if (j.liquidity) {
+      const liq = j.liquidity;
+      const l22 = document.getElementById('liq22');
+      const l23 = document.getElementById('liq23');
+      const l24 = document.getElementById('liq24');
+      const ln  = document.getElementById('liqNotes');
+      if (l22 && liq.y2022 != null) l22.value = liq.y2022;
+      if (l23 && liq.y2023 != null) l23.value = liq.y2023;
+      if (l24 && liq.y2024 != null) l24.value = liq.y2024;
+      if (ln  && liq.notes) ln.value = liq.notes;
+    }
+
+    if (j.ratings) {
+      const r = j.ratings;
+      const iscore = document.getElementById('intScore');
+      const er = document.getElementById('extRating2');
+      const rat = document.getElementById('ratingRationale');
+      if (iscore && r.internal_score) iscore.value = r.internal_score;
+      if (er && r.external_rating) er.value = r.external_rating;
+      if (rat && r.rationale) rat.value = r.rationale;
+    }
+
+    // 先算 Full YoY，再重建 Summary（包括 Debt 公式）
+    recomputeYoYFromTables();
+    alert('Auto-fill completed. Please review and adjust as needed.');
+
+  } catch (e) {
+    console.error(e);
+    alert('Fetch failed: ' + e.message);
+  } finally {
+    const btn2 = document.getElementById('refreshBuyer');
+    if (btn2) {
+      btn2.disabled = false;
+      btn2.innerHTML = 'Fetch Data';
+    }
+  }
+}
+
+// === Dev helper: web-search test (Azure + Worker) ===
+async function devTestWebSearchForFilings(companyName) {
+  const target =
+    (companyName && companyName.trim()) ||
+    (safeVal('buyerLookup') || '').trim() ||
+    'PDD Holdings';
+
+  console.log('=== Dev web-search test via Worker ===');
+  console.log('Target company:', target);
+
+  const sys = `
+You are a helpful assistant with access to web_search and browsing tools.
+Your ONLY task is to find the latest **quarterly or interim financial results PDF**
+for the given company and verify that the PDF link is actually accessible.
+
+HARD REQUIREMENTS (MUST follow):
+
+1. Always start from web_search to find the company's official Investor Relations (IR)
+   site or official exchange / regulator (e.g. SEC, HKEX).
+2. From there, identify the latest quarterly / interim results announcement /
+   earnings release that has a downloadable PDF.
+
+3. For EVERY candidate PDF link you find, you MUST open it with your browsing tools
+   and inspect the actual content, NOT just the URL:
+   - If the response is an HTML page that shows any "Page Not Found", "404",
+     "The page you requested cannot be found", or similar error wording, you MUST
+     treat this link as INVALID and continue searching.
+   - If the response appears to be a standard HTML landing page (navigation bar,
+     multiple links, no PDF viewer), treat it as INVALID.
+   - Only accept links where the main content is an actual PDF document that loads
+     correctly (for example, content-type application/pdf, or the tool explicitly
+     tells you it is a PDF / document).
+
+4. Prefer:
+   - the company's own IR domain (e.g. investor.xxx.com), or
+   - the official exchange / regulator (e.g. sec.gov 6-K / 20-F, hkexnews.hk results announcement).
+   If the IR "static-files" link returns a "Page Not Found" HTML page, discard it and
+   look for an alternative valid PDF (for example, the same results announcement on
+   sec.gov or an alternative PDF link on the IR site).
+
+5. When you are CONFIDENT that you have found a PDF which:
+   - corresponds to the LATEST quarterly / interim financial results, AND
+   - actually opens and is not a "Page Not Found" HTML page,
+   then reply with at most two lines in plain text:
+
+   Line 1: short description, e.g.
+           "Latest results: 2025 Q3 earnings release (unaudited)."
+
+   Line 2: "URL: <direct PDF link>"
+
+6. If after reasonable searching you cannot find any valid PDF (all candidates are
+   404 / Page Not Found / HTML only), you MUST say so explicitly, e.g.:
+
+   "Latest results: No valid PDF found after checking all candidate links."
+   "URL: NONE"
+`.trim();
+
+  const user = `
+Find the latest quarterly or interim financial results PDF for:
+${target}
+
+Remember:
+- You MUST OPEN candidate links with your tools and discard any that are HTML "Page Not Found" pages.
+- Only output two lines:
+  Line 1: short description of the latest quarter and type of results.
+  Line 2: "URL: <direct PDF link>" or "URL: NONE" if none is valid.
+`.trim();
+
+  const payload = {
+    messages: [
+      { role: "system", content: sys },
+      { role: "user", content: user }
+    ]
+  };
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    // dev 测试这里只看纯文本，不再当 JSON 解析
+    const bodyText = await res.text();
+    console.log('=== Dev test raw response body ===\n' + bodyText);
+
+    alert('Dev web-search test completed. 请在 Console 里查看返回的两行文本和 URL。');
+  } catch (e) {
+    console.error('Dev test error:', e);
+    alert('Dev web-search test FAILED: ' + e.message);
+  }
+}
+
+// ====== Refresh analysis from tables ======
+async function refreshAnalysisFromTables() {
+  // 更新 Full YoY + 重建 Summary
+  recomputeYoYFromTables();
+
+  const refreshBtn = document.getElementById('refreshAnalysisBtn');
+  if (refreshBtn) {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "Refreshing…";
+  }
+
+  const buyerName =
+    (safeVal('companyName') || '').trim() ||
+    (safeVal('buyerLookup') || '').trim() ||
+    'the obligor';
+
+  // 重新从 DOM 读取 Full 表数据
+  const fullRows = [];
+  document.querySelectorAll('#finBody tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length >= 4) {
+      const metricName = tds[0].textContent.trim();
+      const y22Input = tds[1].querySelector('input');
+      const y23Input = tds[2].querySelector('input');
+      const y24Input = tds[3].querySelector('input');
+      fullRows.push({
+        metric: metricName,
+        y2022: toNum(y22Input && y22Input.value),
+        y2023: toNum(y23Input && y23Input.value),
+        y2024: toNum(y24Input && y24Input.value),
+        latest_quarter: ""
+      });
+    }
+  });
+
+  if (!fullRows.length) {
+    alert('No financial rows detected to refresh analysis from.');
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "Refresh Analysis";
+    }
+    return;
+  }
+
+  // 根据 Full 构建 Summary JSON（Turnover/GP%/EBITDA/Debt/Equity/FCF）
+  function findMetricRow(metricName) {
+    return fullRows.find(r => (r.metric || '').trim() === metricName);
+  }
+  function val(row, year) {
+    if (!row) return null;
+    const key = 'y' + String(year);
+    return row[key];
+  }
+  function debtVal(year) {
+    const curRow = findMetricRow("Debt - Current");
+    const ncRow = findMetricRow("Debt - Non-current");
+    const cur = val(curRow, year);
+    const nc = val(ncRow, year);
+    if (cur == null && nc == null) return null;
+    return (cur || 0) + (nc || 0);
+  }
+
+  const summaryRows = [
+    {
+      metric: "Turnover",
+      y2022: val(findMetricRow("Turnover"), 2022),
+      y2023: val(findMetricRow("Turnover"), 2023),
+      y2024: val(findMetricRow("Turnover"), 2024)
+    },
+    {
+      metric: "GP%",
+      y2022: val(findMetricRow("GP%"), 2022),
+      y2023: val(findMetricRow("GP%"), 2023),
+      y2024: val(findMetricRow("GP%"), 2024)
+    },
+    {
+      metric: "EBITDA",
+      y2022: val(findMetricRow("EBITDA"), 2022),
+      y2023: val(findMetricRow("EBITDA"), 2023),
+      y2024: val(findMetricRow("EBITDA"), 2024)
+    },
+    {
+      metric: "Debt",
+      y2022: debtVal(2022),
+      y2023: debtVal(2023),
+      y2024: debtVal(2024)
+    },
+    {
+      metric: "Equity",
+      y2022: val(findMetricRow("Equity"), 2022),
+      y2023: val(findMetricRow("Equity"), 2023),
+      y2024: val(findMetricRow("Equity"), 2024)
+    },
+    {
+      metric: "Free cash flow",
+      y2022: val(findMetricRow("Free cash flow"), 2022),
+      y2023: val(findMetricRow("Free cash flow"), 2023),
+      y2024: val(findMetricRow("Free cash flow"), 2024)
+    }
+  ];
+
+  const analysisBox = document.getElementById('analysisBox');
+  if (analysisBox) {
+    analysisBox.innerHTML = '<p><em>Refreshing analysis from manually adjusted tables…</em></p>';
+  }
+
+    const sys = `You are a senior credit analyst. The user has manually adjusted the financial tables in a credit memo.
+You will receive JSON with summary_financials and full_financials representing FINAL numbers.
+Do NOT override those numbers. Base your analysis strictly on the provided data.
+
+Return ONLY a single string in message.content (no JSON object), containing a detailed financial_analysis section in HTML or markdown.
+The analysis should be medium-long (roughly 12–18 structured paragraphs or bullets) with clear sub-headings such as:
+- Revenue & business mix
+- Profitability & extraordinary items
+- Cash flow
+- Balance sheet & leverage
+- Working capital & liquidity
+- Liquidity & funding access
+- Outlook (12–18 months).
+
+You MUST explicitly comment on every metric where YoY change between 2022–2023 or 2023–2024 exceeds +/-10%, quantifying the % change and explaining key drivers and credit impact.
+
+IMPORTANT SCOPE SEPARATION:
+- Do NOT write a separate section titled "Key risks", "Key risks & mitigants", "Risks and mitigants" or anything similar inside financial_analysis.
+- It is fine to mention risk drivers briefly when explaining revenue, margins, cash flow or leverage, but the structured list of key risks and mitigants will be captured in another field ("risks") of the memo.
+- Keep financial_analysis focused on what the numbers show and what they imply for credit quality, not on listing every risk.
+
+Ensure any figures and percentages you mention are consistent with the table data.
+Within the analysis, for each major theme (growth, margins, cash flow, leverage, liquidity, outlook),
+add short textual source notes in brackets where appropriate, e.g. (Source: latest annual report) or (Source: Q4 2024 earnings release).
+Do not fabricate page numbers or very specific document sections.
+End with a short 'Sources' paragraph referring generically to latest annual/quarterly filings, earnings releases and investor presentations (no fabricated page numbers).`;
+
+  const payload = {
+    messages: [
+      {
+        role: "system",
+        content: sys
+      },
+      {
+        role: "user",
+        content: JSON.stringify({
+          obligor: buyerName,
+          summary_financials: summaryRows,
+          full_financials: fullRows
+        })
+      }
+    ]
+  };
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    console.log('Refresh analysis response:', data);
+
+    const content = extractContentFromResponses(data);
+
+    if (!content) {
+      alert('No analysis content returned from refresh call.');
+      return;
+    }
+
+    if (analysisBox) {
+      if (/<\/?[a-z][\s\S]*>/i.test(content)) {
+        analysisBox.innerHTML = content;
+      } else {
+        analysisBox.innerHTML = content
+          .split(/\n\n+/)
+          .map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>")
+          .join("");
+      }
+    }
+
+    populateSourcesFromAnalysis();
+    alert('Analysis refreshed based on updated tables.');
+
+  } catch (e) {
+    console.error(e);
+    alert('Refresh analysis failed: ' + e.message);
+  } finally {
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "Refresh Analysis";
+    }
+  }
+}
+
+// ===== DOM Ready =====
+document.addEventListener('DOMContentLoaded', () => {
+  buildCreditMetricsTable();
+  rebuildSummaryTables(); // 初始空表，也先画出来
+
+  const chatBtn = document.getElementById('chatFloatBtn');
+  const chatPanel = document.getElementById('chatPanel');
+  if (chatBtn && chatPanel) {
+    chatBtn.addEventListener('click', () => {
+      chatPanel.style.display = chatPanel.style.display === 'block' ? 'none' : 'block';
+    });
+  }
+
+  const askBtn = document.getElementById('floatAsk');
+  const qBox = document.getElementById('floatQ');
+  const aBox = document.getElementById('floatA');
+  const chatHistory = [];
+
+  async function runChat() {
+    if (!qBox || !aBox || !askBtn) return;
+    const q = (qBox.value || '').trim();
+    if (!q) { aBox.textContent = 'Please type a question first.'; return; }
+
+    askBtn.disabled = true;
+    aBox.textContent = 'Thinking…';
+
+    const buyerName =
+      (safeVal('companyName') || '').trim() ||
+      (safeVal('buyerLookup') || '').trim() ||
+      'the obligor';
+
+    const analysisEl = document.getElementById('analysisBox');
+    let analysisText = '';
+    if (analysisEl) {
+      analysisText = (analysisEl.innerText || analysisEl.textContent || '').trim();
+    }
+    if (analysisText.length > 4000) {
+      analysisText = analysisText.slice(0, 4000);
+    }
+
+    const sysPrompt = `You are a senior credit officer assistant. Answer follow-up questions in clear English.
+Base your answers ONLY on the memo context supplied by the user (analysis extract, tables, narrative).
+When the officer asks where a number or conclusion comes from, point them to the relevant section
+(e.g. revenue table, EBITDA row, liquidity notes, bond maturity paragraph) instead of inventing new data.
+If the information is not available in the context, say so explicitly and suggest likely public sources
+(latest 20-F/10-K, earnings releases, bond offering circular), without fabricating page numbers.
+Keep answers concise but technically sound, suitable for an investment committee discussion.`;
+
+    const userContent = [
+      "Question from credit officer: " + q,
+      "",
+      "Current obligor: " + buyerName,
+      "",
+      "Extract of automated analysis and memo context (truncated):",
+      analysisText
+    ].join("\n");
+
+    const payload = {
+      messages: [
+        { role: "system", content: sysPrompt },
+        { role: "user", content: userContent }
+      ]
+    };
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      }
+
+      const data = await res.json();
+      const content = extractContentFromResponses(data);
+
+      if (!content) {
+        aBox.textContent = "Chat failed: empty response from Worker.";
+        return;
+      }
+
+      chatHistory.push(
+        { role: "user", content: q },
+        { role: "assistant", content }
+      );
+
+      aBox.innerHTML = content
+        .split(/\n\n+/)
+        .map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>")
+        .join("");
+
+    } catch (e) {
+      console.error(e);
+      aBox.textContent = "Chat failed: " + e.message;
+    } finally {
+      askBtn.disabled = false;
+    }
+  }
+
+  if (askBtn) {
+    askBtn.addEventListener('click', () => { runChat(); });
+  }
+
+  const fetchBtn = document.getElementById('refreshBuyer');
+  if (fetchBtn && !fetchBtn._v86Bound) {
+    fetchBtn.addEventListener('click', autoFetchBuyer);
+    fetchBtn._v86Bound = true;
+  }
+
+  // Onboarding: Next / Skip buttons
+  const nextBtn = document.getElementById("tourNextBtn");
+  const skipBtn = document.getElementById("tourSkipBtn");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      if (currentTourStep < TOUR_STEPS.length - 1) {
+        currentTourStep += 1;
+        renderTourStep();
+      } else {
+        endTour();
+      }
+    });
+  }
+  if (skipBtn) {
+    skipBtn.addEventListener("click", () => {
+      endTour();
+    });
+  }
+
+  // Hidden reset: triple-click title
+  const titleEl = document.getElementById("memoTitle");
+  if (titleEl) {
+    let clickCount = 0;
+    let timer = null;
+    titleEl.addEventListener("click", () => {
+      clickCount += 1;
+      if (clickCount === 1) {
+        timer = setTimeout(() => {
+          clickCount = 0;
+        }, 600);
+      }
+      if (clickCount >= 3) {
+        clickCount = 0;
+        if (timer) clearTimeout(timer);
+        console.log("Tour reset via title triple-click");
+        resetTour();
+      }
+    });
+  }
+
+  // First load: maybe show tour
+  maybeStartTourOnLoad();
+});
+</script>
+
+<script>
+// safety re-bind for Fetch Data button
+(function(){
+  function bindFetch() {
+    try {
+      var btn = document.getElementById('refreshBuyer');
+      if (btn && !btn._v86Bound) {
+        btn.addEventListener('click', autoFetchBuyer);
+        btn._v86Bound = true;
+        console.log("autoFetchBuyer bound (safety helper)");
+      }
+    } catch (e) {
+      console.error("bindFetch error", e);
+    }
+  }
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(bindFetch, 0);
+  } else {
+    document.addEventListener('DOMContentLoaded', bindFetch);
+  }
+  setTimeout(bindFetch, 1000);
+})();
+</script>
